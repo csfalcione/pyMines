@@ -20,7 +20,7 @@ class ConsoleInterface():
 
 
     def parseConsoleArgs(self, args):
-        if args[0] in ['-h', '--help']:
+        if len(args) >= 1 and args[0] in ['-h', '--help']:
             print(self.helpText())
             exit()
         if len(args) != 2:
