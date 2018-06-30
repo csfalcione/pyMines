@@ -1,5 +1,5 @@
 # terminal-minesweeper
-Minesweeper in a terminal. Ensure you have the `termcolor` python module installed.
+Minesweeper in a terminal. Uses Python 3. Ensure you have the `termcolor` module installed.
 
 Play with:
 ```shell
