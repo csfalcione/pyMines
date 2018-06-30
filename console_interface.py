@@ -20,7 +20,19 @@ class ConsoleInterface():
 
 
     def parseConsoleArgs(self, args):
-        pass
+        if args[0] in ['-h', '--help']:
+            print(self.helpText())
+            exit()
+        if len(args) != 2:
+            return
+        try:
+            result = tuple( map(int, args) )
+            if any( map(lambda x: x <= 0, result) ):
+                raise ValueError
+            self.boardSize = result
+        except ValueError:
+            print("Please enter two positive integers for board sizes")
+            exit(1)
     
     def start(self):
         # initialize the game state
@@ -29,8 +41,7 @@ class ConsoleInterface():
 
         state = GAME_ONGOING
         while state == GAME_ONGOING:
-            self.clearScreen()
-            self.renderBoard(game.board)
+            self.refreshScreen(game)
             try:
                 args = self.promptUser()
             except KeyboardInterrupt:
@@ -40,21 +51,25 @@ class ConsoleInterface():
             command = args[0].lower().strip()
             state = self.handleCommand(game, command, args[1:])
         
-        self.clearScreen()
-        self.renderBoard(game.board)
+        self.refreshScreen(game)
         
         # handle win or loss from game state
         if state == GAME_WIN:
-            print("You win!")
+            print( colored("You win!", 'green', None, ['underline']) )
             return
         
         if state == GAME_LOSE:
-            print("BOOM... you lose!")
+            print( colored("BOOM!", 'red', None, ['bold']) )
             return
         
         if state == GAME_QUIT:
             print("Goodbye, quitter.")
             return
+    
+    def refreshScreen(self, game):
+        self.clearScreen()
+        print(self.commandHelpText())
+        self.renderBoard(game.board)
     
     def clearScreen(self):
         system("clear||cls")
@@ -131,3 +146,22 @@ class ConsoleInterface():
     
     def printCoordinateHelp(self):
         print("Coordinates are pairs of non-negative integers.")
+    
+    def helpText(self):
+        return \
+"""
+Terminal Minesweeper
+    usage: python pyMines.py [width height]
+
+note: commands can be followed by arbitrarily many coordinates.
+    ex: 'u 1 1 1 2 1 3' uncovers cells (1, 1), (1, 2), (1, 3)
+"""
+    
+    def commandHelpText(self):
+        return colored("Commands:", attrs=['underline']) + \
+"""
+  {}: u <x> <y>
+  {}:    m <x> <y>
+  {}: s <x> <y>
+  {}:    q
+""".format(*map(lambda x: colored(x, 'cyan'), ['uncover', 'mark', 'suspect', 'quit']))

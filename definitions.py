@@ -1,6 +1,6 @@
 from termcolor import colored
 
-DEFAULT_BOARD_SIZE = (6, 6)
+DEFAULT_BOARD_SIZE = (8, 8)
 
 BOMB_PROBABILITY = 0.15
 
