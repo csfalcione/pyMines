@@ -11,6 +11,8 @@ def renderBoard(board):
     renderHeader(width, padder)
     for idx, row in enumerate(board):
         renderRow(idx, row, padder)
+    
+    print()
 
 def renderHeader(width, padder):
     header = padder("") + " "
@@ -49,11 +51,11 @@ def padString( string, targetLen):
     delta = targetLen - len(string)
     return " " * delta + string
 
-def getColumnDisplay( index):
-    return str(index + 1)
+def getColumnDisplay(index):
+    return getRowDisplay(index)
 
 def getRowDisplay( index):
-    return getColumnDisplay(index)
+    return str(index + 1)
 
 renderMap = {
     CELL_NEUTRAL: lambda cell: RENDER_NEUTRAL,

@@ -12,6 +12,13 @@ class Game():
     def makeBoard(self, width, height):
         return Board(width, height)
 
+    def getCells(self):
+        for row in self.board:
+            for cell in row:
+                yield cell
+    
+    def getCell(self, row, col):
+        return self.board[row][col]
 
 class Board():
 
@@ -29,7 +36,7 @@ class Board():
     def makeCell(self, row, col):
         def filterFunc(coord):
             i, j = coord
-            isNotSelf = i != row and j != col
+            isNotSelf = not (i == row and j == col)
             isInBounds = i >= 0 and i < self.height and \
                          j >= 0 and j < self.width
             return isNotSelf and isInBounds
@@ -55,15 +62,40 @@ class Board():
 
 class Cell():
 
-    def __init__(self, hasBomb, state, neighborIter):
-        self.hasBomb = hasBomb
+    def __init__(self, isBomb, state, neighborIter):
+        self.isBomb = isBomb
         self.neighborIter = neighborIter
         self.state = state
     
     
     def getNeighborCount(self):
-        filterFunc = lambda cell: cell.hasBomb
+        filterFunc = lambda cell: cell.isBomb
         neighbors = self.neighborIter()
         neighbors = filter(filterFunc, neighbors)
         return len( list(neighbors) )
     
+    def uncover(self):
+        if self.isBomb:
+            self.state = CELL_DETONATED
+            return
+        self.state = CELL_UNCOVERED
+
+        if self.getNeighborCount() > 0:
+            return
+
+        for neighbor in self.neighborIter():
+            if neighbor.isBomb == False and neighbor.state == CELL_NEUTRAL:
+                neighbor.uncover()
+    
+    def mark(self):
+        if not self.canTransistion():
+            raise ValueError("cannot mark an uncovered cell")
+        self.state = CELL_MARKED
+    
+    def suspect(self):
+        if not self.canTransistion():
+            raise ValueError("cannot suspect an uncovered cell")
+        self.state = CELL_SUSPECTED
+    
+    def canTransistion(self):
+        return self.state not in [CELL_DETONATED, CELL_UNCOVERED]
