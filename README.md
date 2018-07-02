@@ -5,3 +5,5 @@ Play with:
 ```shell
 python pyMines.py [width height]
 ```
+
+![alt text](https://i.imgur.com/leH0ph0.png)
